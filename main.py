@@ -4,6 +4,7 @@ import time
 import pandas as pd
 import logging
 from modules.similar import find_similar_data
+from modules.union_records import union_records_by_cluster_id
 
 logging.basicConfig(
     level=logging.INFO,
@@ -31,11 +32,25 @@ def main():
     start_time = time.time()
     results = find_similar_data(df)
     logging.info(f"Finished find similar data - elapsed time: {round(time.time() - start_time, 3)} seconds")
+    # results.to_csv("results.csv", index=False, encoding="utf-8")
+    # results = pd.read_csv("results.csv", encoding="utf-8")
 
-    logging.info(f"results = {results.head(5)}")
+    logging.info("Start union calculation golden record")
+    start_time = time.time()
+    result_grouped, result_unique_records = union_records_by_cluster_id(results)
+    logging.info(f"Finished calculation golden record length grouped - {len(result_grouped)}, "
+                 f"length unique {len(result_unique_records)} - elapsed time: {round(time.time() - start_time, 3)} seconds")
+
+    logging.info("Save golden records to assets/grouped_records.csv, assets/unique_records.csv, assets/golden_records.csv")
+    start_time = time.time()
+    result_grouped.to_csv("assets/grouped_records.csv", index=False)
+    result_unique_records.to_csv("assets/unique_records.csv", index=False)
+    pd.concat([result_grouped, result_unique_records], ignore_index=True).to_csv("assets/golden_records.csv", index=False)
+    logging.info(f"Finished save golden records - elapsed time: {round(time.time() - start_time, 3)} seconds")
 
 
 if __name__ == "__main__":
+    start_time = time.time()
     logging.info("Starting working...")
     try:
         main()
@@ -43,4 +58,4 @@ if __name__ == "__main__":
         import traceback
         traceback.print_exc()
         logging.error(e)
-    logging.info("End working...")
+    logging.info(f"End working - elapsed time {round(start_time - time.time(), 3)} sec")
