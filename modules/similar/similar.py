@@ -36,5 +36,6 @@ def find_similar_data(df: pd.DataFrame) -> pd.DataFrame:
     linker.training.estimate_probability_two_random_records_match(deterministic_rules, recall=0.6)
 
     linker.training.estimate_u_using_random_sampling(max_pairs=2e6)
-    results = linker.inference.predict(threshold_match_probability=0.9)
+    df_predict = linker.inference.predict(threshold_match_probability=0.9)
+    results = linker.clustering.cluster_pairwise_predictions_at_threshold(df_predict, threshold_match_probability=0.9)
     return results.as_pandas_dataframe()
