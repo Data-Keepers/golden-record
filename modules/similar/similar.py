@@ -5,13 +5,21 @@ import pandas as pd
 
 
 def find_similar_data(df: pd.DataFrame) -> pd.DataFrame:
+    df['client_first_name'] = df['client_first_name'].str.lower()
+    df['client_last_name'] = df['client_last_name'].str.lower()
+    df['client_middle_name'] = df['client_middle_name'].str.lower()
+    df['client_fio_full'] = df['client_fio_full'].str.lower()
     settings = SettingsCreator(
         link_type="dedupe_only",
         blocking_rules_to_generate_predictions=[
-            block_on("client_first_name", "client_middle_name", "client_last_name", "client_fio_full", "client_bday",
-                     "client_bplace"),
+            block_on("client_first_name", "client_middle_name", "client_last_name", "client_fio_full", "client_bday"),
         ],
         comparisons=[
+            cl.ForenameSurnameComparison(
+                "client_first_name",
+                "client_last_name",
+                forename_surname_concat_col_name=None,
+            ),
             cl.ForenameSurnameComparison(
                 "client_first_name",
                 "client_last_name",
@@ -21,9 +29,9 @@ def find_similar_data(df: pd.DataFrame) -> pd.DataFrame:
                 "client_bday",
                 input_is_string=True,
             ),
-            cl.JaroWinklerAtThresholds("client_bplace", 0.9).configure(
-                term_frequency_adjustments=True
-            ),
+            # cl.JaroWinklerAtThresholds("client_bplace", 0.9).configure(
+            #     term_frequency_adjustments=True
+            # ),
         ],
     )
 
