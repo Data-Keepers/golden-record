@@ -32,12 +32,12 @@ def find_similar_data(df: pd.DataFrame) -> pd.DataFrame:
         ],
         comparisons=[
             cl.ExactMatch("client_inn").configure(
-                m_probabilities=[1.0, 0.0],  # 100% совпадение, вероятность для несовпадения = 0
-                u_probabilities=[0.0, 1.0]  # 100% несовпадение
+                m_probabilities=[0.99, 0.01],  # 100% совпадение, вероятность для несовпадения = 0
+                u_probabilities=[0.01, 0.99]  # 100% несовпадение
             ),
             cl.ExactMatch("client_snils").configure(
-                m_probabilities=[1.0, 0.0],  # 100% совпадение, вероятность для несовпадения = 0
-                u_probabilities=[0.0, 1.0]  # 100% несовпадение
+                m_probabilities=[0.99, 0.01],  # 100% совпадение, вероятность для несовпадения = 0
+                u_probabilities=[0.01, 0.99]  # 100% несовпадение
             ),
             cl.ExactMatch("contact_email").configure(
                 m_probabilities=[0.5, 0.5],  # 50% совпадение, вероятность для несовпадения = 0
