@@ -46,7 +46,7 @@ def main():
 
     start_time = time.time()
     pd.concat([result_grouped, result_unique_records], ignore_index=True).to_csv(args.o, index=False)
-    logging.info(f"Saving completed - elapsed time: {round(time.time() - start_time, 3)} seconds")
+    logging.info(f"Saving completed, elapsed time: {round(time.time() - start_time, 3)} seconds")
 
 
 if __name__ == "__main__":

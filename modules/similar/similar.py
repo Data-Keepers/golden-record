@@ -13,7 +13,12 @@ def find_similar_data(df: pd.DataFrame) -> pd.DataFrame:
         unique_id_column_name="client_id",
         link_type="dedupe_only",
         blocking_rules_to_generate_predictions=[
-            block_on("client_first_name", "client_middle_name", "client_last_name", "client_fio_full", "client_bday"),
+            block_on("client_first_name", "client_middle_name", "client_last_name", "client_bday"),
+            block_on("client_fio_full", "client_bday"),
+            block_on("client_inn"),
+            block_on("client_snils"),
+            block_on("contact_email")
+
         ],
         comparisons=[
             cl.ForenameSurnameComparison(
