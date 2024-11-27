@@ -75,18 +75,17 @@ def find_similar_data(df: pd.DataFrame) -> pd.DataFrame:
                 m_probabilities=[0.6, 0.1, 0.1, 0.05, 0.05, 0.1],  # 6 уровней для совпадений
                 u_probabilities=[0.02, 0.02, 0.02, 0.4, 0.4, 0.12]  # 6 уровней для несовпадений
             )
-            # cl.JaroWinklerAtThresholds("client_bplace", 0.9).configure(
-            #     term_frequency_adjustments=True
-            # ),
         ],
-        probability_two_random_records_match=0.9
     )
 
-    linker = Linker(df, settings, db_api=DuckDBAPI(), set_up_basic_logging=False)
-    # linker
-    # linker.training.estimate_probability_two_random_records_match(deterministic_rules, recall=0.6)
+    deterministic_rules = [
+        "l.client_inn = r.client_inn"
+    ]
 
-    # linker.training.estimate_u_using_random_sampling(max_pairs=2e6)
+    linker = Linker(df, settings, db_api=DuckDBAPI(), set_up_basic_logging=False)
+    linker.training.estimate_probability_two_random_records_match(deterministic_rules, recall=0.6)
+
+    linker.training.estimate_u_using_random_sampling(max_pairs=2e6)
     df_predict = linker.inference.predict(threshold_match_probability=0.9)
     results = linker.clustering.cluster_pairwise_predictions_at_threshold(df_predict, threshold_match_probability=0.9)
     return results.as_pandas_dataframe()
