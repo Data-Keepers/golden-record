@@ -10,6 +10,7 @@ def find_similar_data(df: pd.DataFrame) -> pd.DataFrame:
     df['client_middle_name'] = df['client_middle_name'].str.lower()
     df['client_fio_full'] = df['client_fio_full'].str.lower()
     settings = SettingsCreator(
+        unique_id_column_name="client_id",
         link_type="dedupe_only",
         blocking_rules_to_generate_predictions=[
             block_on("client_first_name", "client_middle_name", "client_last_name", "client_fio_full", "client_bday"),

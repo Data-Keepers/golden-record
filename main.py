@@ -14,48 +14,48 @@ logging.basicConfig(
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Creating a golden records!")
-    parser.add_argument('--file', type=str, help='file', required=True)
+    parser.add_argument('-f', type=str, help='file name', required=True)
+    parser.add_argument('-o', type=str, help='output file name', required=True)
     args = parser.parse_args()
     return args
 
 
 def main():
     args = parse_arguments()
+    logging.info(f"Starting to read file {args.f}...")
 
-    logging.info(f"Start read file {args.file}")
     start_time = time.time()
-    df = pd.read_csv(args.file, sep=',', quotechar='"', dtype=str)
-    df['unique_id'] = df.index
-    logging.info(f"Finished read file {args.file} - elapsed time: {round(time.time() - start_time, 3)} seconds")
+    df = pd.read_csv(args.f, sep=',', quotechar='"', dtype=str)
+    logging.info(f"Finished read file {args.f} - elapsed time: {round(time.time() - start_time, 3)} seconds")
+    logging.info(f"Total row count: {len(df)}")
 
-    logging.info("Start find similar data")
+    logging.info("Starting to search for similar rows...")
     start_time = time.time()
     results = find_similar_data(df)
-    logging.info(f"Finished find similar data - elapsed time: {round(time.time() - start_time, 3)} seconds")
-    # results.to_csv("results.csv", index=False, encoding="utf-8")
-    # results = pd.read_csv("results.csv", encoding="utf-8")
+    logging.info(f"Search for similar rows completed - elapsed time: {round(time.time() - start_time, 3)} seconds")
 
-    logging.info("Start union calculation golden record")
+    logging.info("Starting to merge similar rows...")
     start_time = time.time()
     result_grouped, result_unique_records = union_records_by_cluster_id(results)
-    logging.info(f"Finished calculation golden record length grouped - {len(result_grouped)}, "
-                 f"length unique {len(result_unique_records)} - elapsed time: {round(time.time() - start_time, 3)} seconds")
+    logging.info(f"""Row merging completed.
+                 Duplicated row count: {len(result_grouped)}
+                 Unique rows count:{len(result_unique_records)}
+                 Elapsed time: {round(time.time() - start_time, 3)} seconds""")
 
-    logging.info("Save golden records to assets/grouped_records.csv, assets/unique_records.csv, assets/golden_records.csv")
+    logging.info(f"Save golden records to file {args.o}")
+
     start_time = time.time()
-    result_grouped.to_csv("assets/grouped_records.csv", index=False)
-    result_unique_records.to_csv("assets/unique_records.csv", index=False)
-    pd.concat([result_grouped, result_unique_records], ignore_index=True).to_csv("assets/golden_records.csv", index=False)
-    logging.info(f"Finished save golden records - elapsed time: {round(time.time() - start_time, 3)} seconds")
+    pd.concat([result_grouped, result_unique_records], ignore_index=True).to_csv(args.o, index=False)
+    logging.info(f"Saving completed - elapsed time: {round(time.time() - start_time, 3)} seconds")
 
 
 if __name__ == "__main__":
     start_time = time.time()
-    logging.info("Starting working...")
+    logging.info("Start working...")
     try:
         main()
     except Exception as e:
         import traceback
         traceback.print_exc()
         logging.error(e)
-    logging.info(f"End working - elapsed time {round(start_time - time.time(), 3)} sec")
+    logging.info(f"Total elapsed time {round(time.time() - start_time, 3)} sec")
