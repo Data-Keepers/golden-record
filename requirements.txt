@@ -1,2 +1,3 @@
 pandas~=2.2.3
 splink~=4.0.5
+transliterate~=1.10.2
