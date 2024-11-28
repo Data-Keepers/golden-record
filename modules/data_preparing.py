@@ -22,7 +22,8 @@ def columns_preparing(chunk):
 
 def prepare_data(df: pd.DataFrame, n_processes=None) -> pd.DataFrame:
     n_processes = n_processes or cpu_count()
-    chunks = np.array_split(df, n_processes)
+    chunk_size = len(df) // n_processes
+    chunks = [df.iloc[i:i + chunk_size] for i in range(0, len(df), chunk_size)]
 
     with Pool(processes=n_processes) as pool:
         results = pool.map(columns_preparing, chunks)
