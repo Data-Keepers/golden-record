@@ -1,11 +1,12 @@
 import logging
 import time
-
+from multiprocessing import Pool, cpu_count
 from splink import block_on, SettingsCreator
 import splink.comparison_library as cl
 from splink import Linker, DuckDBAPI
 from transliterate import translit
 import pandas as pd
+import numpy as np
 
 
 def transliterate_to_cyrillic(text):
@@ -17,14 +18,34 @@ def transliterate_to_cyrillic(text):
         return text
 
 
+def process_transliteration(chunk):
+    """Применяет транслитерацию к одной части DataFrame."""
+    for col in ['client_first_name', 'client_last_name', 'client_middle_name', 'client_fio_full']:
+        chunk[col] = chunk[col].str.lower().apply(transliterate_to_cyrillic)
+    return chunk
+
+
+def parallel_transliterate(df, n_processes=None):
+    """Распараллеливает транслитерацию."""
+    n_processes = n_processes or cpu_count()
+    chunks = np.array_split(df, n_processes)
+
+    with Pool(processes=n_processes) as pool:
+        results = pool.map(process_transliteration, chunks)
+
+    return pd.concat(results)
+
+
 def find_similar_data(df: pd.DataFrame) -> pd.DataFrame:
     logging.info("Starting to search for similar rows...")
     start_time = time.time()
 
-    df['client_first_name'] = df['client_first_name'].str.lower().apply(transliterate_to_cyrillic)
-    df['client_last_name'] = df['client_last_name'].str.lower().apply(transliterate_to_cyrillic)
-    df['client_middle_name'] = df['client_middle_name'].str.lower().apply(transliterate_to_cyrillic)
-    df['client_fio_full'] = df['client_fio_full'].str.lower().apply(transliterate_to_cyrillic)
+    # Распараллеливаем транслитерацию
+    logging.info("Starting parallel transliteration...")
+    df = parallel_transliterate(df)
+    logging.info(f"Transliteration completed, elapsed time: {round(time.time() - start_time, 3)} seconds")
+
+    # Настройки для Splink
     settings = SettingsCreator(
         unique_id_column_name="client_id",
         link_type="dedupe_only",
