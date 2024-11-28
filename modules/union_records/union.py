@@ -56,6 +56,7 @@ def union_records_by_cluster_id(records: pd.DataFrame) -> [pd.DataFrame, pd.Data
     logging.info(f"""Row merging completed.
                  Merged rows count: {len(result_grouped)}
                  Unique rows count: {len(result_unique_records)}
+                 Total rows count: {len(result_grouped) + len(result_unique_records)}
                  Elapsed time: {round(time.time() - start_time, 3)} seconds""")
 
     return pd.DataFrame(result_grouped), result_unique_records
