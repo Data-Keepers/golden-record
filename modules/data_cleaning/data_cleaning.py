@@ -11,6 +11,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df = df[~df['client_first_name'].astype(str).str.contains(r'[0-9]', regex=True)]
     df = df[~df['client_last_name'].astype(str).str.contains(r'[0-9]', regex=True)]
     df = df[~df['client_middle_name'].astype(str).str.contains(r'[0-9]', regex=True)]
+    df = df[~df['client_fio_full'].astype(str).str.contains(r'[0-9]', regex=True)]
 
     logging.info(f"Data cleaning completed, elapsed time: {round(time.time() - start_time, 3)} seconds")
     return df
