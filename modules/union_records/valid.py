@@ -25,9 +25,17 @@ def valid_snils(snils: str) -> bool:
     return bool(re.match(pattern, snils))
 
 
+def valid_name(name: str) -> bool:
+    pattern = r'^[а-я ]+$'
+    return bool(re.match(pattern, name))
+
+
 VALID_RECORDS = {
     "contact_phone": valid_phone,
     "contact_email": valid_email,
     "client_inn": valid_inn,
-    "client_snils": valid_snils
+    "client_snils": valid_snils,
+    "client_first_name": valid_name,
+    "client_middle_name": valid_name,
+    "client_last_name": valid_name,
 }

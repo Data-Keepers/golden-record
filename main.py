@@ -39,7 +39,8 @@ def main():
 
     result_cleaned = clean_data(result_grouped)
 
-    logging.info(f"Save golden records to file {args.o}")
+    logging.info(f"Save golden records to file {args.o}, rows count: {len(result_cleaned)}")
+
     start_time = time.time()
     result_cleaned.to_csv(args.o, index=False)
     logging.info(f"Saving completed, elapsed time: {round(time.time() - start_time, 3)} seconds")
