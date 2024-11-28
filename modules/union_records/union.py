@@ -28,7 +28,7 @@ def union_records_by_cluster_id(records: pd.DataFrame) -> [pd.DataFrame, pd.Data
                     replaced_ids[field] = row["client_id"]
             if len(replaced_ids) == len(nan_fields):
                 break
-        golden_record["mapping_fields"] = json.dumps(replaced_ids)
+        golden_record["field_taken_from_idx"] = json.dumps(replaced_ids)
         result_grouped.append(golden_record)
     logging.info(f"""Row merging completed.
                  Merged rows count: {len(result_grouped)}
