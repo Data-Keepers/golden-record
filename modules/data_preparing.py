@@ -1,4 +1,3 @@
-import numpy as np
 from transliterate import translit
 from multiprocessing import Pool, cpu_count
 import pandas as pd
