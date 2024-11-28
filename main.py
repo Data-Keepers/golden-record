@@ -4,7 +4,8 @@ import time
 import pandas as pd
 import logging
 
-from modules.data_cleaning.data_cleaning import clean_data
+from modules.data_cleaning import clean_data
+from modules.data_preparing import prepare_data
 from modules.similar import find_similar_data
 from modules.union_records import union_records_by_cluster_id
 
@@ -30,15 +31,17 @@ def main():
     logging.info(f"Finished read file {args.f} - elapsed time: {round(time.time() - start_time, 3)} seconds")
     logging.info(f"Total row count: {len(df)}")
 
-    df = clean_data(df)
+    df = prepare_data(df)
 
     results = find_similar_data(df)
 
-    result_grouped, result_unique_records = union_records_by_cluster_id(results)
+    result_grouped = union_records_by_cluster_id(results)
+
+    result_cleaned = clean_data(result_grouped)
 
     logging.info(f"Save golden records to file {args.o}")
     start_time = time.time()
-    pd.concat([result_grouped, result_unique_records], ignore_index=True).to_csv(args.o, index=False)
+    result_cleaned.to_csv(args.o, index=False)
     logging.info(f"Saving completed, elapsed time: {round(time.time() - start_time, 3)} seconds")
 
 

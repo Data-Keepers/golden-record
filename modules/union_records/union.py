@@ -37,7 +37,7 @@ def process_group(group):
     return golden_record
 
 
-def union_records_by_cluster_id(records: pd.DataFrame) -> [pd.DataFrame, pd.DataFrame]:
+def union_records_by_cluster_id(records: pd.DataFrame) -> pd.DataFrame:
     logging.info("Starting to merge similar rows...")
     start_time = time.time()
 
@@ -59,4 +59,4 @@ def union_records_by_cluster_id(records: pd.DataFrame) -> [pd.DataFrame, pd.Data
                  Total rows count: {len(result_grouped) + len(result_unique_records)}
                  Elapsed time: {round(time.time() - start_time, 3)} seconds""")
 
-    return pd.DataFrame(result_grouped), result_unique_records
+    return pd.concat([pd.DataFrame(result_grouped), result_unique_records], ignore_index=True)
