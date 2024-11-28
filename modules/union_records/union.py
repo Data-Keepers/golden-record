@@ -33,7 +33,7 @@ def process_group(group):
                     replaced_ids[field] = row["client_id"]
         if len(replaced_ids) == len(nan_fields):
             break
-    golden_record["field_taken_from_idx"] = json.dumps(replaced_ids)
+    golden_record["field_taken_from_client_id"] = json.dumps(replaced_ids)
     return golden_record
 
 
