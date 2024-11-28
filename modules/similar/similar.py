@@ -1,3 +1,6 @@
+import logging
+import time
+
 from splink import block_on, SettingsCreator
 import splink.comparison_library as cl
 from splink import Linker, DuckDBAPI
@@ -15,6 +18,9 @@ def transliterate_to_cyrillic(text):
 
 
 def find_similar_data(df: pd.DataFrame) -> pd.DataFrame:
+    logging.info("Starting to search for similar rows...")
+    start_time = time.time()
+
     df['client_first_name'] = df['client_first_name'].str.lower().apply(transliterate_to_cyrillic)
     df['client_last_name'] = df['client_last_name'].str.lower().apply(transliterate_to_cyrillic)
     df['client_middle_name'] = df['client_middle_name'].str.lower().apply(transliterate_to_cyrillic)
@@ -56,4 +62,6 @@ def find_similar_data(df: pd.DataFrame) -> pd.DataFrame:
     linker.training.estimate_u_using_random_sampling(max_pairs=2e6)
     df_predict = linker.inference.predict(threshold_match_probability=0.9)
     results = linker.clustering.cluster_pairwise_predictions_at_threshold(df_predict, threshold_match_probability=0.9)
+
+    logging.info(f"Search for similar rows completed, elapsed time: {round(time.time() - start_time, 3)} seconds")
     return results.as_pandas_dataframe()

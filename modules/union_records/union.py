@@ -1,9 +1,13 @@
 import json
+import logging
+import time
 
 import pandas as pd
 
 
 def union_records_by_cluster_id(records: pd.DataFrame) -> [pd.DataFrame, pd.DataFrame]:
+    logging.info("Starting to merge similar rows...")
+    start_time = time.time()
     grouped = records.groupby("cluster_id")
     result_unique_records = grouped.filter(lambda x: len(x) == 1)
     result_grouped = []
@@ -26,4 +30,8 @@ def union_records_by_cluster_id(records: pd.DataFrame) -> [pd.DataFrame, pd.Data
                 break
         golden_record["mapping_fields"] = json.dumps(replaced_ids)
         result_grouped.append(golden_record)
+    logging.info(f"""Row merging completed.
+                 Merged rows count: {len(result_grouped)}
+                 Unique rows count:{len(result_unique_records)}
+                 Elapsed time: {round(time.time() - start_time, 3)} seconds""")
     return pd.DataFrame(result_grouped), result_unique_records
