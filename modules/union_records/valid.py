@@ -23,3 +23,11 @@ def valid_snils(snils: str) -> bool:
     pattern = r'\d.*\d.*\d.*\d.*\d.*\d.*\d.*\d.*\d.*\d.*\d.*\d'
 
     return bool(re.match(pattern, snils))
+
+
+VALID_RECORDS = {
+    "contact_phone": valid_phone,
+    "contact_email": valid_email,
+    "client_inn": valid_inn,
+    "client_snils": valid_snils
+}

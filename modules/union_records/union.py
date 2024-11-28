@@ -1,7 +1,7 @@
 import json
 import logging
 import time
-
+from . import valid
 import pandas as pd
 
 
@@ -19,13 +19,22 @@ def union_records_by_cluster_id(records: pd.DataFrame) -> [pd.DataFrame, pd.Data
             # na_position="last"
         )
         golden_record = sorted_group.iloc[0].to_dict()
-        nan_fields = [key for key, value in golden_record.items() if pd.isna(value)]
+        nan_fields = [key for key, value in golden_record.items() if (pd.isna(value) or
+                                                                      (valid.VALID_RECORDS.get(key)
+                                                                       and not valid.VALID_RECORDS.get(key)(str(value))))]
         replaced_ids = {}
         for index, row in sorted_group.iterrows():
             for field in nan_fields:
-                if pd.isna(golden_record[field]) and not pd.isna(row[field]):
-                    golden_record[field] = row[field]
-                    replaced_ids[field] = row["client_id"]
+                if (pd.isna(golden_record[field]) or
+                        (valid.VALID_RECORDS.get(field) and not valid.VALID_RECORDS.get(field)(golden_record[field]))
+                        and not pd.isna(row[field])):
+                    if valid.VALID_RECORDS.get(field):
+                        if valid.VALID_RECORDS.get(field)(str(row[field])):
+                            golden_record[field] = row[field]
+                            replaced_ids[field] = row["client_id"]
+                    else:
+                        golden_record[field] = row[field]
+                        replaced_ids[field] = row["client_id"]
             if len(replaced_ids) == len(nan_fields):
                 break
         golden_record["field_taken_from_idx"] = json.dumps(replaced_ids)
