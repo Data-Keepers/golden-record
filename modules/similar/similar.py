@@ -18,7 +18,7 @@ def transliterate_to_cyrillic(text):
         return text
 
 
-def process_transliteration(chunk):
+def columns_preparing(chunk):
     """Применяет транслитерацию к одной части DataFrame."""
     for col in ['client_first_name', 'client_last_name', 'client_middle_name', 'client_fio_full']:
         chunk[col] = chunk[col].str.lower().apply(transliterate_to_cyrillic)
@@ -31,7 +31,7 @@ def parallel_transliterate(df, n_processes=None):
     chunks = np.array_split(df, n_processes)
 
     with Pool(processes=n_processes) as pool:
-        results = pool.map(process_transliteration, chunks)
+        results = pool.map(columns_preparing, chunks)
 
     return pd.concat(results)
 
