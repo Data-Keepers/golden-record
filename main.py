@@ -3,6 +3,8 @@ import time
 
 import pandas as pd
 import logging
+
+from modules.data_cleaning.data_cleaning import clean_data
 from modules.similar import find_similar_data
 from modules.union_records import union_records_by_cluster_id
 
@@ -28,11 +30,12 @@ def main():
     df = pd.read_csv(args.f, sep=',', quotechar='"', dtype=str)
     logging.info(f"Finished read file {args.f} - elapsed time: {round(time.time() - start_time, 3)} seconds")
     logging.info(f"Total row count: {len(df)}")
-
+    df = clean_data(df)
+    logging.info(f"Data cleaning completed, elapsed time: {round(time.time() - start_time, 3)} seconds")
     logging.info("Starting to search for similar rows...")
     start_time = time.time()
     results = find_similar_data(df)
-    logging.info(f"Search for similar rows completed - elapsed time: {round(time.time() - start_time, 3)} seconds")
+    logging.info(f"Search for similar rows completed, elapsed time: {round(time.time() - start_time, 3)} seconds")
 
     logging.info("Starting to merge similar rows...")
     start_time = time.time()
