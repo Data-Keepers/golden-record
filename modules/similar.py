@@ -7,6 +7,8 @@ import pandas as pd
 
 
 def find_similar_data(df: pd.DataFrame) -> pd.DataFrame:
+    logging.getLogger('splink').setLevel(logging.ERROR)
+    logging.getLogger('splink.predict').setLevel(logging.ERROR)
     logging.info("Starting to search for similar rows...")
     start_time = time.time()
 
