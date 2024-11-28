@@ -38,7 +38,7 @@ def main():
     start_time = time.time()
     result_grouped, result_unique_records = union_records_by_cluster_id(results)
     logging.info(f"""Row merging completed.
-                 Duplicated row count: {len(result_grouped)}
+                 Merged rows count: {len(result_grouped)}
                  Unique rows count:{len(result_unique_records)}
                  Elapsed time: {round(time.time() - start_time, 3)} seconds""")
 

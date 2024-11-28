@@ -31,49 +31,17 @@ def find_similar_data(df: pd.DataFrame) -> pd.DataFrame:
             block_on("contact_phone")
         ],
         comparisons=[
-            cl.ExactMatch("client_inn").configure(
-                m_probabilities=[0.99, 0.01],  # 100% совпадение, вероятность для несовпадения = 0
-                u_probabilities=[0.01, 0.99]  # 100% несовпадение
-            ),
-            cl.ExactMatch("client_snils").configure(
-                m_probabilities=[0.99, 0.01],  # 100% совпадение, вероятность для несовпадения = 0
-                u_probabilities=[0.01, 0.99]  # 100% несовпадение
-            ),
-            cl.ExactMatch("contact_email").configure(
-                m_probabilities=[0.5, 0.5],  # 50% совпадение, вероятность для несовпадения = 0
-                u_probabilities=[0.5, 0.5]  # 50% несовпадение
-            ),
-            cl.ExactMatch("contact_phone").configure(
-                m_probabilities=[0.5, 0.5],  # 50% совпадение, вероятность для несовпадения = 0
-                u_probabilities=[0.5, 0.5]  # 50% несовпадение
-            ),
-            cl.ForenameSurnameComparison(
-                forename_col_name="client_first_name",
-                surname_col_name="client_last_name",
-            ).configure(
-                m_probabilities=[0.6, 0.2, 0.05, 0.6, 0.2, 0.05, 0.1],  # 7 значений
-                u_probabilities=[0.02, 0.05, 0.1, 0.02, 0.05, 0.1, 0.66]  # 7
-            ),
-            cl.ForenameSurnameComparison(
-                forename_col_name="client_first_name",
-                surname_col_name="client_middle_name",
-            ).configure(
-                m_probabilities=[0.6, 0.2, 0.05, 0.6, 0.2, 0.05, 0.1],  # 7 значений
-                u_probabilities=[0.02, 0.05, 0.1, 0.02, 0.05, 0.1, 0.66]  # 7
-            ),
-            cl.ForenameSurnameComparison(
-                forename_col_name="client_middle_name",
-                surname_col_name="client_last_name",
-            ).configure(
-                m_probabilities=[0.6, 0.2, 0.05, 0.6, 0.2, 0.05, 0.1],  # 7 значений
-                u_probabilities=[0.02, 0.05, 0.1, 0.02, 0.05, 0.1, 0.66]  # 7
-            ),
+            cl.JaroWinklerAtThresholds("client_inn"),
+            cl.JaroWinklerAtThresholds("client_snils"),
+            cl.EmailComparison("contact_email"),
+            cl.JaroWinklerAtThresholds("contact_phone"),
+            cl.NameComparison("client_first_name"),
+            cl.NameComparison("client_middle_name"),
+            cl.NameComparison("client_last_name"),
+            cl.NameComparison("client_fio_full"),
             cl.DateOfBirthComparison(
                 "client_bday",
                 input_is_string=True,
-            ).configure(
-                m_probabilities=[0.6, 0.1, 0.1, 0.05, 0.05, 0.1],  # 6 уровней для совпадений
-                u_probabilities=[0.02, 0.02, 0.02, 0.4, 0.4, 0.12]  # 6 уровней для несовпадений
             )
         ],
     )
